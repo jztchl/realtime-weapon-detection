@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weapon Detection - Image List</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            background-color: #0d0d0d;
+            color: #3498db;
+            padding: 20px 0;
+            text-align: center;
+            margin: 0;
+            font-size: 36px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #282828;
+            color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background-color: #0d0d0d;
+            color: #3498db;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        img:hover {
+            transform: scale(1.1);
+        }
+
+        .fullscreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .fullscreen img {
+            max-width: 90%;
+            max-height: 90%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+        }
+
+        .notification {
+            display: none;
+            background-color: #2ecc71;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var notificationSound = new Audio('media/notification.mp3');
+            function updateImageList() {
+                // Get the last ID from the last received image
+                var lastId = $('#image-table-body').find('tr').eq(1).data('id');
+                console.log(lastId)
+
+                // If no ID is available, set it to 0 (fetch all data)
+                lastId = lastId || 0;
+
+                $.ajax({
+                    url: '/image-list/',
+                    method: 'GET',
+                    data: { last_id: lastId },
+                    dataType: 'json',
+                    success: function (data) {
+                        var images = data.images;
+                        var tableBody = $('#image-table-body');
+
+                        // Identify new images
+                        var newImages = images.filter(function (image) {
+                            return tableBody.find('img[src="' + image.image + '"]').length === 0;
+                        });
+
+                        if (newImages.length > 0) {
+                            notificationSound.play();
+                        }
+
+                        // Add new images to the top of the table
+                        newImages.forEach(function (image) {
+                            var row = $('<tr>').data('id', image.id);
+                            row.append('<td class="zoom-container"><img class="zoom-img" src="' + image.image + '" alt="Uploaded Image"></td>');
+                            row.append('<td>' + image.address + '</td>');
+                            tableBody.prepend(row);  // Add new images at the top of the table
+
+                            // Alert for new image upload
+                            showNotification('New image uploaded: ' + image.address);
+                        });
+
+                        // Add event listener for full-screen zoom
+                        $('.zoom-img').click(function () {
+                            var imgSrc = $(this).attr('src');
+                            $('.fullscreen img').attr('src', imgSrc);
+                            $('.fullscreen').fadeIn();
+                        });
+
+                        // Close full-screen zoom on click outside the image
+                        $('.fullscreen').click(function () {
+                            $(this).fadeOut();
+                        });
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.error('Error fetching image data:', textStatus, errorThrown);
+                    }
+                });
+            }
+
+            
+
+            function showNotification(message) {
+                $('.notification').text(message);
+                $('.notification').fadeIn().delay(800).fadeOut();
+            }
+
+            // Initial load of images on page load
+            updateImageList();
+
+            // Update the image list every 5 seconds (adjust as needed)
+            setInterval(updateImageList, 2000);
+
+            // Add hover effects on page elements (unchanged)
+            $('body').hover(
+                function () {
+                    $(this).css('background-color', '#222');
+                },
+                function () {
+                    $(this).css('background-color', '#1a1a1a');
+                }
+            );
+
+            $('h1').hover(
+                function () {
+                    $(this).css('color', '#3498db');
+                },
+                function () {
+                    $(this).css('color', '#fff');
+                }
+            );
+
+            $('table').hover(
+                function () {
+                    $(this).css('box-shadow', '0 4px 8px rgba(0, 0, 0, 0.3)');
+                },
+                function () {
+                    $(this).css('box-shadow', '0 2px 4px rgba(0, 0, 0, 0.2)');
+                }
+            );
+
+            $('.fullscreen img').hover(
+                function () {
+                    $(this).css('box-shadow', '0 8px 16px rgba(0, 0, 0, 0.4)');
+                },
+                function () {
+                    $(this).css('box-shadow', '0 4px 8px rgba(0, 0, 0, 0.2)');
+                }
+            );
+        });
+        
+    </script>
+</head>
+<body>
+    <h1><span class="weapon-icon">🔫</span>WEAPON DETECTION SYSTEM</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Address</th>
+            </tr>
+        </thead>
+        <tbody id="image-table-body"></tbody>
+    </table>
+
+    <div class="fullscreen">
+        <img src="" alt="Full-Screen Image">
+    </div>
+
+    <div class="notification"></div>
+</body>
+</html>

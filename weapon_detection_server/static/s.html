@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player</title>
+</head>
+<body>
+    <h1>Audio Player</h1>
+    
+    <button id="playButton">Play Audio</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var audioPlayer = new Audio();
+
+            document.getElementById('playButton').addEventListener('click', function () {
+                // Set the source of the audio file
+                audioPlayer.src = 'notification.mp3';
+
+                // Load and play the audio
+                audioPlayer.load();
+                audioPlayer.play();
+            });
+        });
+    </script>
+</body>
+</html>

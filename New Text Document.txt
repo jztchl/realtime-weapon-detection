@@ -1,0 +1,2 @@
+yolo task=detect mode=train model=yolov8n.pt data=weapon_detection/data.yaml epochs=10 imgsz=640
+yolo val model=yolov8n.pt data=weapon_detection/data.yaml  batch=1 imgsz=640

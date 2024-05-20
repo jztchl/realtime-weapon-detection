@@ -1,4 +1,4 @@
-Sure, here is the styled README content for your project:
+
 
 ```markdown
 # Real-Time Weapon Detection

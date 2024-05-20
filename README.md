@@ -1,4 +1,6 @@
-
+<p align="center">
+  <img src="weapon_detection.png" alt="Camera Rental Logo" width="200">
+</p>
 
 ```markdown
 # Real-Time Weapon Detection

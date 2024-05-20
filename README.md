@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="weapon_detection.png" alt="Camera Rental Logo" width="200">
+  <img src="weapon_detection.png" alt="weapon detection Logo" width="200">
 </p>
 
 ```markdown

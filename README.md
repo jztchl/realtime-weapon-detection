@@ -2,7 +2,6 @@
   <img src="weapon_detection.png" alt="weapon detection Logo" width="200">
 </p>
 
-```markdown
 # Real-Time Weapon Detection
 
 This project aims to detect weapons in real-time through cameras and notify authorities instantly. It's a mini project demonstrating the use of deep learning for security purposes.
